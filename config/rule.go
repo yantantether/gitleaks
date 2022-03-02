@@ -14,6 +14,12 @@ type Rule struct {
 	Path        *regexp.Regexp
 	Tags        []string
 	Allowlist   Allowlist
+	Validate    Validate
+}
+
+type Validate struct {
+	TruePositive  []string
+	FalsePositive []string
 }
 
 func (r *Rule) IncludeEntropy(secret string) (bool, float64) {

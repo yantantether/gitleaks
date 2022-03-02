@@ -22,7 +22,10 @@ type ViperConfig struct {
 		Regex       string
 		Path        string
 		Tags        []string
-
+		Validate    struct {
+			TruePositive  []string
+			FalsePositive []string
+		}
 		Allowlist struct {
 			Regexes []string
 			Paths   []string
@@ -80,6 +83,7 @@ func (vc *ViperConfig) Translate() (Config, error) {
 			SecretGroup: r.SecretGroup,
 			Entropy:     r.Entropy,
 			Tags:        r.Tags,
+			Validate:    r.Validate,
 			Allowlist: Allowlist{
 				Regexes: allowlistRegexes,
 				Paths:   allowlistPaths,
