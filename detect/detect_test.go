@@ -178,12 +178,12 @@ func TestTruePositives(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, rule := range cfg.Rules {
-		if len(rule.Validate.TruePositive) == 0 {
+		if len(rule.Validate.TruePositives) == 0 {
 			continue
 		}
 		singleRuleConfig := config.Config{}
 		singleRuleConfig.Rules = append(singleRuleConfig.Rules, rule)
-		for _, tp := range rule.Validate.TruePositive {
+		for _, tp := range rule.Validate.TruePositives {
 			findings := DetectFindings(
 				singleRuleConfig, []byte(tp), "validate", "")
 			assert.Equal(t, len(findings), 1)
@@ -201,12 +201,12 @@ func TestFalsePositives(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, rule := range cfg.Rules {
-		if len(rule.Validate.FalsePositive) == 0 {
+		if len(rule.Validate.FalsePositives) == 0 {
 			continue
 		}
 		singleRuleConfig := config.Config{}
 		singleRuleConfig.Rules = append(singleRuleConfig.Rules, rule)
-		for _, fp := range rule.Validate.FalsePositive {
+		for _, fp := range rule.Validate.FalsePositives {
 			findings := DetectFindings(
 				singleRuleConfig, []byte(fp), "validate", "")
 			assert.Equal(t, len(findings), 0)
