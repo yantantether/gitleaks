@@ -209,7 +209,7 @@ func TestFalsePositives(t *testing.T) {
 		for _, fp := range rule.Validate.FalsePositive {
 			findings := DetectFindings(
 				singleRuleConfig, []byte(fp), "validate", "")
-			assert.Equal(t, len(findings), 1)
+			assert.Equal(t, len(findings), 0)
 		}
 	}
 }
