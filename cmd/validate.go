@@ -57,12 +57,13 @@ func runValidate(cmd *cobra.Command, args []string) {
 		if ruleID != "" && ruleID != rule.RuleID {
 			continue
 		}
-		if len(rule.Validate.TruePositive) == 0 {
+		if len(rule.Validate.TruePositives) == 0 &&
+			len(rule.Validate.FalsePositives) == 0 {
 			continue
 		}
 		singleRuleConfig := config.Config{}
 		singleRuleConfig.Rules = append(singleRuleConfig.Rules, rule)
-		for _, tp := range rule.Validate.TruePositive {
+		for _, tp := range rule.Validate.TruePositives {
 			findings := detect.DetectFindings(
 				singleRuleConfig, []byte(tp), "validate", "")
 			if verbose {
@@ -76,7 +77,7 @@ func runValidate(cmd *cobra.Command, args []string) {
 				fmt.Fprintf(w, "%s true positive %s\t%sok%s\n", rule.RuleID, tp, Green, Reset)
 			}
 		}
-		for _, fp := range rule.Validate.FalsePositive {
+		for _, fp := range rule.Validate.FalsePositives {
 			findings := detect.DetectFindings(
 				singleRuleConfig, []byte(fp), "validate", "")
 			if verbose {

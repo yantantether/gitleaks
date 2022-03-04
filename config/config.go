@@ -23,8 +23,8 @@ type ViperConfig struct {
 		Path        string
 		Tags        []string
 		Validate    struct {
-			TruePositive  []string
-			FalsePositive []string
+			TruePositives  []string
+			FalsePositives []string
 		}
 		Allowlist struct {
 			Regexes []string

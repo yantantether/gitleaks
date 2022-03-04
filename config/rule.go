@@ -18,8 +18,8 @@ type Rule struct {
 }
 
 type Validate struct {
-	TruePositive  []string
-	FalsePositive []string
+	TruePositives  []string
+	FalsePositives []string
 }
 
 func (r *Rule) IncludeEntropy(secret string) (bool, float64) {

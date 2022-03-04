@@ -55,8 +55,8 @@ id = "OPENSSH-PK"
 description = "SSH private key"
 regex = '''-----BEGIN OPENSSH PRIVATE KEY-----'''
 [rules.validate]
-truePositive = ["-----BEGIN OPENSSH PRIVATE KEY-----"]
-falsePositive = ["-----BEGINN OPENSSH PRIVATE KEY-----"]
+truePositives = ["-----BEGIN OPENSSH PRIVATE KEY-----"]
+falsePositives = ["-----BEGINN OPENSSH PRIVATE KEY-----"]
 #
 [[rules]]
 id = "PGP-PK"
@@ -253,8 +253,8 @@ description = "Discord client ID"
 regex = '''(?i)(discord[a-z0-9_ .\-,]{0,25})(=|>|:=|\|\|:|<=|=>|:).{0,5}['\"]([0-9]{18})['\"]'''
 secretGroup = 3
 [rules.validate]
-truePositive = ['''discord_client_id = "000000000000000000"''']
-falsePositive = ['''discord_client_id = "00000000000000000"''']
+truePositives = ['''discord_client_id = "000000000000000000"''']
+falsePositives = ['''discord_client_id = "00000000000000000"''']
 
 [[rules]]
 id = "discord-client-secret"
@@ -263,12 +263,12 @@ regex = '''(?i)(discord[a-z0-9_ .\-,]{0,25})(=|>|:=|\|\|:|<=|=>|:).{0,5}['\"]([a
 secretGroup = 3
 entropy=3.8
 [rules.validate]
-truePositive = [
+truePositives = [
     '''discord_client_secret = "8dyfuiRyq=vVc3RRr_edRk-fK__JItpZ"''',
     '''discord_client_secret="8dyfuiRyq=vVc3RRr_edRk-fK__JItpZ"''',
     '''var discord_client_secret = "8dyfuiRyq=vVc3RRr_edRk-fK__JItpZ"'''
 ]
-falsePositive = [
+falsePositives = [
     '''discordUser="very-long-user-name-indeed-foo-b"''',
 ]
 
