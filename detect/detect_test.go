@@ -3,6 +3,7 @@ package detect
 import (
 	"fmt"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/spf13/viper"
@@ -165,4 +166,32 @@ func TestDetectFindings(t *testing.T) {
 		findings := DetectFindings(cfg, tt.bytes, tt.filePath, tt.commit)
 		assert.ElementsMatch(t, tt.expectedFindings, findings)
 	}
+}
+
+func TestTruePositives(t *testing.T) {
+	viper.SetConfigType("toml")
+	viper.ReadConfig(strings.NewReader(config.DefaultConfig))
+	var vc config.ViperConfig
+	viper.Unmarshal(&vc)
+	cfg, err := vc.Translate()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, rule := range cfg.Rules {
+		if len(rule.Validate.TruePositive) == 0 {
+			continue
+		}
+		singleRuleConfig := config.Config{}
+		singleRuleConfig.Rules = append(singleRuleConfig.Rules, rule)
+		for _, tp := range rule.Validate.TruePositive {
+			fmt.Println(tp)
+			findings := DetectFindings(
+				singleRuleConfig, []byte(tp), "validate", "")
+			assert.Equal(t, len(findings), 1)
+		}
+	}
+
+}
+
+func TestFalsePositives(t *testing.T) {
 }
