@@ -350,8 +350,34 @@ func (d *Detector) Detect(fragment Fragment) []report.Finding {
 	// add newline indices for location calculation in detectRule
 	fragment.newlineIndices = regexp.MustCompile("\n").FindAllStringIndex(fragment.Raw, -1)
 
+nextRule:
 	for _, rule := range d.Config.Rules {
-		findings = append(findings, d.detectRule(fragment, rule)...)
+		detectRuleFindings := d.detectRule(fragment, rule)
+
+		// check if there are any extractors for the current rule
+		if len(rule.Extractors) == 0 {
+			// if there are no extractors, then we can append the findings
+			// to the findings list and continue to the next rule
+			findings = append(findings, detectRuleFindings...)
+		} else {
+			// otherwise, we need to check each finding that the current rule
+			// has detected, check the current rule's extractors against the
+			// current finding's `match`.
+			for _, detectRuleFinding := range detectRuleFindings {
+				fragment.Raw = detectRuleFinding.Match
+				for _, extractor := range rule.Extractors {
+					extractorFindings := d.detectRule(fragment, &extractor)
+					// Since the extractor is looking at a finding's `match`, we should
+					// only append one finding if the extractor has found a match.
+					// If the extractor has detected a match, then we should skip to the
+					// next rule and ignore the remaining extractors.
+					if len(extractorFindings) > 0 {
+						findings = append(findings, extractorFindings[0])
+						continue nextRule
+					}
+				}
+			}
+		}
 	}
 	return filter(findings, d.Redact)
 }
