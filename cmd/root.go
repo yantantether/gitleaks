@@ -38,13 +38,19 @@ var rootCmd = &cobra.Command{
 func init() {
 	cobra.OnInitialize(initLog)
 	rootCmd.PersistentFlags().StringP("config", "c", "", configDescription)
-	rootCmd.PersistentFlags().Int("exit-code", 1, "exit code when leaks have been encountered")
-	rootCmd.PersistentFlags().StringP("source", "s", ".", "path to source (default: $PWD)")
+	rootCmd.PersistentFlags().Int("exit-code", 1,
+		"exit code when leaks have been encountered")
+	rootCmd.PersistentFlags().StringP("source", "s", ".",
+		"path to source (default: $PWD)")
 	rootCmd.PersistentFlags().StringP("report-path", "r", "", "report file")
-	rootCmd.PersistentFlags().StringP("report-format", "f", "json", "output format (json, csv, sarif)")
-	rootCmd.PersistentFlags().StringP("log-level", "l", "info", "log level (debug, info, warn, error, fatal)")
-	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "show verbose output from scan")
-	rootCmd.PersistentFlags().Bool("redact", false, "redact secrets from logs and stdout")
+	rootCmd.PersistentFlags().StringP("report-format", "f",
+		"json", "output format (json, csv, sarif)")
+	rootCmd.PersistentFlags().StringP("log-level", "l", "info",
+		"log level (debug, info, warn, error, fatal)")
+	rootCmd.PersistentFlags().BoolP("verbose", "v", false,
+		"show verbose output from scan")
+	rootCmd.PersistentFlags().Bool("redact", false,
+		"redact secrets from logs and stdout")
 	err := viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config"))
 	if err != nil {
 		log.Fatal().Msgf("err binding config %s", err.Error())
@@ -85,7 +91,8 @@ func initConfig() {
 	} else if os.Getenv("GITLEAKS_CONFIG") != "" {
 		envPath := os.Getenv("GITLEAKS_CONFIG")
 		viper.SetConfigFile(envPath)
-		log.Debug().Msgf("Using gitleaks config from GITLEAKS_CONFIG env var: %s", envPath)
+		log.Debug().Msgf(
+			"Using gitleaks config from GITLEAKS_CONFIG env var: %s", envPath)
 	} else {
 		source, err := rootCmd.Flags().GetString("source")
 		if err != nil {
@@ -97,10 +104,12 @@ func initConfig() {
 		}
 
 		if !fileInfo.IsDir() {
-			log.Debug().Msgf("Unable to load gitleaks config from %s since --source=%s is a file, using default config",
+			log.Debug().Msgf(
+				"Unable to load gitleaks config from %s since --source=%s is a file, using default config",
 				filepath.Join(source, ".gitleaks.toml"), source)
 			viper.SetConfigType("toml")
-			if err = viper.ReadConfig(strings.NewReader(config.DefaultConfig)); err != nil {
+			if err = viper.ReadConfig(strings.NewReader(
+				config.DefaultConfig)); err != nil {
 				log.Fatal().Msgf("err reading toml %s", err.Error())
 			}
 			return

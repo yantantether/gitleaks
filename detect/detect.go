@@ -9,15 +9,15 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/zricethezav/gitleaks/v8/config"
-	"github.com/zricethezav/gitleaks/v8/detect/git"
-	"github.com/zricethezav/gitleaks/v8/report"
-
 	"github.com/fatih/semgroup"
 	"github.com/gitleaks/go-gitdiff/gitdiff"
 	"github.com/h2non/filetype"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
+
+	"github.com/zricethezav/gitleaks/v8/config"
+	"github.com/zricethezav/gitleaks/v8/detect/git"
+	"github.com/zricethezav/gitleaks/v8/report"
 )
 
 // Type used to differentiate between git scan types:
@@ -118,8 +118,10 @@ func (d *Detector) DetectString(content string) []report.Finding {
 	})
 }
 
-// detectRule scans the given fragment for the given rule and returns a list of findings
-func (d *Detector) detectRule(fragment Fragment, rule *config.Rule) []report.Finding {
+// detectRule scans the given fragment for the given
+// rule and returns a list of findings
+func (d *Detector) detectRule(fragment Fragment,
+	rule *config.Rule) []report.Finding {
 	var findings []report.Finding
 
 	// check if filepath or commit is allowed for this rule
@@ -135,8 +137,9 @@ func (d *Detector) detectRule(fragment Fragment, rule *config.Rule) []report.Fin
 				Description: rule.Description,
 				File:        fragment.FilePath,
 				RuleID:      rule.RuleID,
-				Match:       fmt.Sprintf("file detected: %s", fragment.FilePath),
-				Tags:        rule.Tags,
+				Match: fmt.Sprintf("file detected: %s",
+					fragment.FilePath),
+				Tags: rule.Tags,
 			}
 			return append(findings, finding)
 		}
@@ -219,13 +222,8 @@ func (d *Detector) detectRule(fragment Fragment, rule *config.Rule) []report.Fin
 				// entropy is too low, skip this finding
 				continue
 			}
-			// NOTE: this is a goofy hack to get around the fact there golang's regex engine
-			// does not support positive lookaheads. Ideally we would want to add a
-			// restriction on generic rules regex that requires the secret match group
-			// contains both numbers and alphabetical characters, not just alphabetical characters.
-			// What this bit of code does is check if the ruleid is prepended with "generic" and enforces the
-			// secret contains both digits and alphabetical characters.
-			// TODO: this should be replaced with stop words
+
+			// ensure generic rules contain digits in the secret captured
 			if strings.HasPrefix(rule.RuleID, "generic") {
 				if !containsDigit(secret) {
 					continue
@@ -238,10 +236,11 @@ func (d *Detector) detectRule(fragment Fragment, rule *config.Rule) []report.Fin
 	return findings
 }
 
-// GitScan accepts a *gitdiff.File channel which contents a git history generated from
-// the output of `git log -p ...`. startGitScan will look at each file (patch) in the history
-// and determine if the patch contains any findings.
-func (d *Detector) DetectGit(source string, logOpts string, gitScanType GitScanType) ([]report.Finding, error) {
+// DetectGit accepts a path to repo (source), git log options (logOpts),
+// and a gitScanType. A slice of findings is returned.
+func (d *Detector) DetectGit(source string,
+	logOpts string,
+	gitScanType GitScanType) ([]report.Finding, error) {
 	var (
 		gitdiffFiles <-chan *gitdiff.File
 		err          error
@@ -311,8 +310,8 @@ func (d *Detector) DetectGit(source string, logOpts string, gitScanType GitScanT
 	return d.findings, nil
 }
 
-// DetectFiles accepts a path to a source directory or file and begins a scan of the
-// file or directory.
+// DetectFiles accepts a path to a source directory
+// or file and begins a scan of the file or directory.
 func (d *Detector) DetectFiles(source string) ([]report.Finding, error) {
 	s := semgroup.NewGroup(context.Background(), 4)
 	paths := make(chan string)
@@ -381,7 +380,8 @@ func (d *Detector) Detect(fragment Fragment) []report.Finding {
 	}
 
 	// add newline indices for location calculation in detectRule
-	fragment.newlineIndices = regexp.MustCompile("\n").FindAllStringIndex(fragment.Raw, -1)
+	fragment.newlineIndices = regexp.MustCompile("\n").FindAllStringIndex(
+		fragment.Raw, -1)
 
 	for _, rule := range d.Config.Rules {
 		findings = append(findings, d.detectRule(fragment, rule)...)

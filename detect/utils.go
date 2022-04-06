@@ -13,9 +13,11 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// augmentGitFinding updates the start and end line numbers of a finding to include the
-// delta from the git diff
-func augmentGitFinding(finding report.Finding, textFragment *gitdiff.TextFragment, f *gitdiff.File) report.Finding {
+// augmentGitFinding updates the start and end line numbers
+// of a finding to include the delta from the git diff
+func augmentGitFinding(finding report.Finding,
+	textFragment *gitdiff.TextFragment,
+	f *gitdiff.File) report.Finding {
 	if !strings.HasPrefix(finding.Match, "file detected") {
 		finding.StartLine += int(textFragment.NewPosition)
 		finding.EndLine += int(textFragment.NewPosition)
@@ -35,9 +37,6 @@ func augmentGitFinding(finding report.Finding, textFragment *gitdiff.TextFragmen
 
 // shannonEntropy calculates the entropy of data using the formula defined here:
 // https://en.wiktionary.org/wiki/Shannon_entropy
-// Another way to think about what this is doing is calculating the number of bits
-// needed to on average encode the data. So, the higher the entropy, the more random the data, the
-// more bits needed to encode that data.
 func shannonEntropy(data string) (entropy float64) {
 	if data == "" {
 		return 0
@@ -69,11 +68,15 @@ func filter(findings []report.Finding, redact bool) []report.Finding {
 					f.Commit == fPrime.Commit &&
 					f.RuleID != fPrime.RuleID &&
 					strings.Contains(fPrime.Secret, f.Secret) &&
-					!strings.Contains(strings.ToLower(fPrime.RuleID), "generic") {
-
-					genericMatch := strings.Replace(f.Match, f.Secret, "REDACTED", -1)
-					betterMatch := strings.Replace(fPrime.Match, fPrime.Secret, "REDACTED", -1)
-					log.Debug().Msgf("skipping %s finding (%s), %s rule takes precendence (%s)", f.RuleID, genericMatch, fPrime.RuleID, betterMatch)
+					!strings.Contains(strings.ToLower(
+						fPrime.RuleID), "generic") {
+					genericMatch := strings.Replace(
+						f.Match, f.Secret, "REDACTED", -1)
+					betterMatch := strings.Replace(
+						fPrime.Match, fPrime.Secret, "REDACTED", -1)
+					log.Debug().Msgf(
+						"replacing %s (%s), with %s (%s)",
+						f.RuleID, genericMatch, fPrime.RuleID, betterMatch)
 					include = false
 					break
 				}
