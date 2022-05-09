@@ -2,7 +2,7 @@
   name: Detect hardcoded secrets
   description: Detect hardcoded secrets using Gitleaks
   entry: gitleaks protect --verbose --redact --staged
-  language: golang
+  language: python3
   pass_filenames: false
 - id: gitleaks-docker
   name: Detect hardcoded secrets
